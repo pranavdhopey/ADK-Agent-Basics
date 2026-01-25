@@ -102,11 +102,17 @@ google_search_agent/
 └── README.md         # This file
 ```
 
-## Learn More
+## Official Documentation
 
-- **ADK Tools Documentation**: Learn about other built-in tools like code execution, file operations, and more
-- **Custom Tools**: You can create your own tools to give agents custom capabilities
-- **Tool Selection**: Agents automatically decide when to use tools based on your instruction
+Learn more about the ADK features used in this agent:
+
+| Feature | Documentation Link |
+|---------|-------------------|
+| **Tools Overview** | [ADK Tools Documentation](https://google.github.io/adk-docs/tools/) |
+| **Google Search Tool** | [Google Search Tool Guide](https://google.github.io/adk-docs/tools/gemini-api/google-search/) |
+| **Custom Tools** | [Building Custom Tools](https://google.github.io/adk-docs/tools-custom/) |
+| **Function Tools** | [Function Tools Guide](https://google.github.io/adk-docs/tools-custom/function-tools/) |
+| **LLM Agents** | [LLM Agents Documentation](https://google.github.io/adk-docs/agents/llm-agents/) |
 
 ---
 
