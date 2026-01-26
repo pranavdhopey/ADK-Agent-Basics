@@ -394,6 +394,36 @@ The best way to learn is by building. Trust me, I wrote probably 10 broken agent
 
 # Part 2: State Management - Teaching Your Agent to Remember
 
+*Welcome back to the series! If you're joining fresh, I recommend starting with [Part 1](#part-1-the-basics---your-first-ai-agents) where we built our first three agents.*
+
+---
+
+## Reflections on Part 1
+
+Wow, what a journey Part 1 was! We went from "what even is an AI agent?" to building three working agents:
+- A **Greeting Agent** that has actual personality
+- A **Search Agent** that can browse the internet
+- An **Incident Analysis Agent** that returns structured JSON
+
+I was genuinely surprised how quickly things clicked once I understood the basic pattern. The `instruction` → `tools` → `output_schema` trio is powerful!
+
+But here's the thing that started bugging me while testing the greeting agent...
+
+## What We're Building in Part 2
+
+Have you noticed that our greeting agent has the memory of a goldfish? It asks your name, you tell it, and two messages later it's forgotten. Frustrating, right?
+
+In this part, we're going to fix that by learning:
+- **State Management** - How to make agents remember things
+- **Session Services** - Managing conversations across messages
+- **Runners** - The glue that connects agents with sessions
+
+By the end of Part 2, our greeting agent will remember your name for the entire conversation. It's a small feature, but it's what separates a toy demo from a real application.
+
+Let's dive in!
+
+---
+
 ## The Problem with Stateless Agents
 
 Remember our friendly greeting agent from Part 1? Let's have a conversation with it:
@@ -645,6 +675,39 @@ This is where things get really interesting!
 ---
 
 # Part 3: Workflow Agents - Building Agent Teams
+
+*Welcome back! This is Part 3 of my ADK learning series. Catch up with [Part 1 (Basics)](#part-1-the-basics---your-first-ai-agents) and [Part 2 (State Management)](#part-2-state-management---teaching-your-agent-to-remember) if you haven't already.*
+
+---
+
+## Reflections on Parts 1 & 2
+
+Okay, I have to admit - after Part 2, I felt like I'd leveled up. We went from simple one-shot agents to agents that actually remember things across conversations. The `InMemorySessionService` + `Runner` combo felt like unlocking a secret power.
+
+But here's what started bothering me while building more complex agents: **one agent trying to do everything results in mediocre work**. My incident analysis agent was okay at analyzing incidents, but when I tried to make it also format output beautifully AND validate the YAML AND suggest improvements... it got messy.
+
+That's when I discovered **workflow agents**, and honestly? This is where ADK goes from "cool" to "whoa."
+
+## What We're Building in Part 3
+
+In this part, we're learning how to build **teams of agents** that work together. Think of it like building a company:
+- Instead of one person doing everything, you have specialists
+- Each specialist does ONE thing really well
+- They coordinate to deliver amazing results
+
+We'll explore three types of workflows:
+- **SequentialAgent** - Agents that run one after another (like a pipeline)
+- **ParallelAgent** - Agents that run simultaneously (3x faster!)
+- **LoopAgent** - Agents that repeat until they get it right
+
+By the end of Part 3, you'll have built:
+1. A **Command Helper** that classifies, generates, and formats shell commands
+2. A **Multi-Cloud Advisor** that consults GCP, AWS, and K8s experts in parallel
+3. A **YAML Generator** that iteratively improves until the output is perfect
+
+This is where things get really interesting. Let's go!
+
+---
 
 ## Why Multiple Agents?
 
@@ -1082,6 +1145,43 @@ And we'll solve the tricky problem of **infinite loops** when agents try to tran
 ---
 
 # Part 4: Multi-Agent Systems - The Router Pattern
+
+*Welcome to the finale! This is Part 4 of my ADK learning series. If you're new here, start with [Part 1 (Basics)](#part-1-the-basics---your-first-ai-agents), then [Part 2 (State Management)](#part-2-state-management---teaching-your-agent-to-remember), and [Part 3 (Workflow Agents)](#part-3-workflow-agents---building-agent-teams).*
+
+---
+
+## Reflections on Parts 1-3
+
+What. A. Journey.
+
+Looking back at where we started - literally just trying to make an AI say "hello" with personality - and where we are now... it's kind of amazing. We've gone from:
+- Simple agents (Part 1) → Agents with memory (Part 2) → Teams of agents (Part 3)
+
+The workflow agents in Part 3 were a game-changer for me. The idea that I could have a "generator" agent, a "validator" agent, and a "fixer" agent working in a loop until the output is perfect? That's not just cool - that's production-ready quality assurance!
+
+But there was still one thing bugging me: **all our workflows were predetermined**. The Sequential/Parallel/Loop agents always follow the same path. What if I want an agent that can handle *any* type of request and figure out the right path dynamically?
+
+## What We're Building in Part 4
+
+This is the capstone of the series. We're building a **multi-agent system with dynamic routing**:
+- A **Router Agent** that reads user messages and decides what to do
+- **Specialist Agents** that handle specific types of requests
+- **Transfer Control** to prevent infinite loops (this one took me HOURS to debug!)
+
+Think of it like a company's reception desk:
+1. Someone walks in (user message)
+2. The receptionist (router) figures out what they need
+3. They direct them to the right department (specialist agent)
+4. The specialist handles everything from there
+
+By the end of Part 4, you'll have:
+- A complete support bot that greets users OR analyzes technical incidents
+- Deep understanding of transfer control (and why infinite loops happen)
+- Production-ready patterns for building scalable agent systems
+
+This is the most complex thing we've built - but if you've followed along, you're ready. Let's finish strong!
+
+---
 
 ## The Challenge
 
