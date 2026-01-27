@@ -1190,7 +1190,6 @@ So far, we've built agents that do one thing, or workflows with predetermined st
 Imagine building a support bot that should:
 - Greet users warmly when they say "hello"
 - Analyze technical incidents when they report problems
-- Maybe search the web when they ask factual questions
 
 You could build one massive agent with a huge instruction... but that gets messy fast. Instead, let's use the **router pattern**.
 
@@ -1203,7 +1202,7 @@ The idea is simple:
 4. The specialist handles the request
 
 ```
-User Message → Router → [Greeting Agent OR Incident Agent OR Search Agent]
+User Message → Router → [Greeting Agent OR Incident Agent]
 ```
 
 ### The Code - Specialist Agents
@@ -1503,14 +1502,14 @@ Here's the final architecture of a complete multi-agent system:
                     │   intent)       │
                     └────────┬────────┘
                              │
-              ┌──────────────┼──────────────┐
-              ▼              ▼              ▼
-        ┌──────────┐  ┌──────────────┐  ┌──────────┐
-        │ Greeting │  │  Incident    │  │  Search  │
-        │  Agent   │  │  Analysis    │  │  Agent   │
-        │          │  │  Agent       │  │          │
-        └──────────┘  └──────────────┘  └──────────┘
-        (terminal)     (terminal)        (terminal)
+              ┌──────────────┴──────────────┐
+              ▼                              ▼
+        ┌──────────┐                ┌──────────────┐
+        │ Greeting │                │   Incident   │
+        │  Agent   │                │   Analysis   │
+        │          │                │    Agent     │
+        └──────────┘                └──────────────┘
+        (terminal)                    (terminal)
 ```
 
 Each specialist is:
