@@ -18,9 +18,23 @@ Let's dive in!
 
 ---
 
+## Table of Contents
+
+- [Part 1: The Basics](#part-1-the-basics---your-first-ai-agents) - Your first AI agents, tools, and the core Agent class
+- [Part 2: State Management](#part-2-state-management---teaching-your-agent-to-remember) - Teaching agents to remember with sessions and runners
+- [Part 3: Workflow Agents](#part-3-workflow-agents---building-agent-teams) - Sequential, Parallel, and Loop agent patterns
+- [Part 4: Multi-Agent Systems](#part-4-multi-agent-systems---the-router-pattern) - Router pattern with specialist agents
+- [Part 5: AgentTool](#part-5-agenttool---turning-agents-into-tools) - Wrapping agents as callable tools
+- [Part 6: FunctionTool](#part-6-functiontool---giving-agents-real-power) - Executing real code with Python functions
+- [Quick Reference Card](#quick-reference-card) - Cheat sheet for all ADK patterns
+
+---
+
 # Part 1: The Basics - Your First AI Agents
 
 📁 **Code**: [GitHub Repository](https://github.com/pranavdhopey/ADK-Agent-Basics.git)
+
+> **TL;DR**: Learn what AI agents are, set up Google ADK, and build 3 agents - a Greeting Agent (basic), Search Agent (with tools), and Multi-tool Agent. You'll understand the `Agent` class, `instruction`, `tools`, and `model` parameters.
 
 ---
 
@@ -404,6 +418,8 @@ The best way to learn is by building. Trust me, I wrote probably 10 broken agent
 
 📁 **Code**: [GitHub Repository](https://github.com/pranavdhopey/ADK-Agent-Basics.git)
 
+> **TL;DR**: Learn how agents can remember context across conversations using `Runner`, `InMemorySessionService`, and `output_key`. Build an Incident Analyzer that stores results in session state.
+
 *Welcome back to the series! If you're joining fresh, I recommend starting with [Part 1](#part-1-the-basics---your-first-ai-agents) where we built our first three agents.*
 
 ---
@@ -687,6 +703,8 @@ This is where things get really interesting!
 # Part 3: Workflow Agents - Building Agent Teams
 
 📁 **Code**: [GitHub Repository](https://github.com/pranavdhopey/ADK-Agent-Basics.git)
+
+> **TL;DR**: Learn three workflow patterns - `SequentialAgent` (agents run one after another), `ParallelAgent` (agents run simultaneously), and `LoopAgent` (agents repeat until done). Build a YAML generator with validation loop.
 
 *Welcome back! This is Part 3 of my ADK learning series. Catch up with [Part 1 (Basics)](#part-1-the-basics---your-first-ai-agents) and [Part 2 (State Management)](#part-2-state-management---teaching-your-agent-to-remember) if you haven't already.*
 
@@ -1159,6 +1177,8 @@ And we'll solve the tricky problem of **infinite loops** when agents try to tran
 # Part 4: Multi-Agent Systems - The Router Pattern
 
 📁 **Code**: [GitHub Repository](https://github.com/pranavdhopey/ADK-Agent-Basics.git)
+
+> **TL;DR**: Learn the router pattern where a main agent analyzes intent and delegates to specialists using `sub_agents`. Build a DevOps Copilot with kubectl and gcloud specialist agents that handle domain-specific requests.
 
 *Welcome back! This is Part 4 of my ADK learning series. If you're new here, start with [Part 1 (Basics)](#part-1-the-basics---your-first-ai-agents), then [Part 2 (State Management)](#part-2-state-management---teaching-your-agent-to-remember), and [Part 3 (Workflow Agents)](#part-3-workflow-agents---building-agent-teams).*
 
@@ -1642,6 +1662,8 @@ The key difference: with `sub_agents`, control transfers completely. With `Agent
 # Part 5: AgentTool - Turning Agents Into Tools
 
 📁 **Code**: [GitHub Repository](https://github.com/pranavdhopey/ADK-Agent-Basics.git)
+
+> **TL;DR**: Learn `AgentTool` to wrap agents as callable tools (unlike `sub_agents` where control transfers). The main agent stays in control, calls specialists, and gets results back. Great for orchestration.
 
 *Bonus part! If you're following along, you've already mastered [Part 1 (Basics)](#part-1-the-basics---your-first-ai-agents), [Part 2 (State)](#part-2-state-management---teaching-your-agent-to-remember), [Part 3 (Workflows)](#part-3-workflow-agents---building-agent-teams), and [Part 4 (Multi-Agent Routing)](#part-4-multi-agent-systems---the-router-pattern).*
 
@@ -2138,6 +2160,8 @@ The key difference:
 # Part 6: FunctionTool - Giving Agents Real Power
 
 📁 **Code**: [GitHub Repository](https://github.com/pranavdhopey/ADK-Agent-Basics.git)
+
+> **TL;DR**: Learn `FunctionTool` to wrap Python functions as tools that execute real code (kubectl, gcloud, HTTP requests). Unlike AgentTool (LLM reasoning), FunctionTool runs actual commands and returns real results.
 
 *Final part! You've mastered [Part 1 (Basics)](#part-1-the-basics---your-first-ai-agents), [Part 2 (State)](#part-2-state-management---teaching-your-agent-to-remember), [Part 3 (Workflows)](#part-3-workflow-agents---building-agent-teams), [Part 4 (Multi-Agent Routing)](#part-4-multi-agent-systems---the-router-pattern), and [Part 5 (AgentTool)](#part-5-agenttool---turning-agents-into-tools).*
 
