@@ -12,6 +12,8 @@ I'm going to be honest with you - when I first heard about "AI Agents," I though
 
 This blog series documents my journey learning Google's Agent Development Kit (ADK). I'm not an expert - I'm learning alongside you. Think of this as notes from a fellow student who just happens to be a few chapters ahead. I'll share the mistakes I made, the "aha!" moments I had, and most importantly, the actual code that works.
 
+This is a **6-part series** that will take you from building your first "hello world" agent to creating sophisticated multi-agent systems that can actually execute real infrastructure commands. Each part builds on the previous one, so by the end you'll have a solid understanding of ADK's core concepts - agents, tools, state management, workflows, and more. Whether you're completely new to AI agents or looking to learn Google's ADK specifically, this series has got you covered.
+
 Let's dive in!
 
 ---
