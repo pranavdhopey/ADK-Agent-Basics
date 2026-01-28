@@ -2,6 +2,8 @@
 
 *A beginner's guide to Google Agent Development Kit - learning by building*
 
+📁 **All Code Examples**: [GitHub Repository](https://github.com/pranavdhopey/ADK-Agent-Basics.git)
+
 ---
 
 Hey there, fellow learner!
@@ -15,6 +17,10 @@ Let's dive in!
 ---
 
 # Part 1: The Basics - Your First AI Agents
+
+📁 **Code**: [GitHub Repository](https://github.com/pranavdhopey/ADK-Agent-Basics.git)
+
+---
 
 ## What Even Is an AI Agent?
 
@@ -394,6 +400,8 @@ The best way to learn is by building. Trust me, I wrote probably 10 broken agent
 
 # Part 2: State Management - Teaching Your Agent to Remember
 
+📁 **Code**: [GitHub Repository](https://github.com/pranavdhopey/ADK-Agent-Basics.git)
+
 *Welcome back to the series! If you're joining fresh, I recommend starting with [Part 1](#part-1-the-basics---your-first-ai-agents) where we built our first three agents.*
 
 ---
@@ -675,6 +683,8 @@ This is where things get really interesting!
 ---
 
 # Part 3: Workflow Agents - Building Agent Teams
+
+📁 **Code**: [GitHub Repository](https://github.com/pranavdhopey/ADK-Agent-Basics.git)
 
 *Welcome back! This is Part 3 of my ADK learning series. Catch up with [Part 1 (Basics)](#part-1-the-basics---your-first-ai-agents) and [Part 2 (State Management)](#part-2-state-management---teaching-your-agent-to-remember) if you haven't already.*
 
@@ -1145,6 +1155,8 @@ And we'll solve the tricky problem of **infinite loops** when agents try to tran
 ---
 
 # Part 4: Multi-Agent Systems - The Router Pattern
+
+📁 **Code**: [GitHub Repository](https://github.com/pranavdhopey/ADK-Agent-Basics.git)
 
 *Welcome back! This is Part 4 of my ADK learning series. If you're new here, start with [Part 1 (Basics)](#part-1-the-basics---your-first-ai-agents), then [Part 2 (State Management)](#part-2-state-management---teaching-your-agent-to-remember), and [Part 3 (Workflow Agents)](#part-3-workflow-agents---building-agent-teams).*
 
@@ -1626,6 +1638,8 @@ The key difference: with `sub_agents`, control transfers completely. With `Agent
 ---
 
 # Part 5: AgentTool - Turning Agents Into Tools
+
+📁 **Code**: [GitHub Repository](https://github.com/pranavdhopey/ADK-Agent-Basics.git)
 
 *Bonus part! If you're following along, you've already mastered [Part 1 (Basics)](#part-1-the-basics---your-first-ai-agents), [Part 2 (State)](#part-2-state-management---teaching-your-agent-to-remember), [Part 3 (Workflows)](#part-3-workflow-agents---building-agent-teams), and [Part 4 (Multi-Agent Routing)](#part-4-multi-agent-systems---the-router-pattern).*
 
@@ -2120,6 +2134,8 @@ The key difference:
 ---
 
 # Part 6: FunctionTool - Giving Agents Real Power
+
+📁 **Code**: [GitHub Repository](https://github.com/pranavdhopey/ADK-Agent-Basics.git)
 
 *Final part! You've mastered [Part 1 (Basics)](#part-1-the-basics---your-first-ai-agents), [Part 2 (State)](#part-2-state-management---teaching-your-agent-to-remember), [Part 3 (Workflows)](#part-3-workflow-agents---building-agent-teams), [Part 4 (Multi-Agent Routing)](#part-4-multi-agent-systems---the-router-pattern), and [Part 5 (AgentTool)](#part-5-agenttool---turning-agents-into-tools).*
 
