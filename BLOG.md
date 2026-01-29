@@ -1150,6 +1150,20 @@ You can even **combine** them like we did with the Multi-Cloud Advisor (Parallel
 
 ---
 
+### What I Learned
+
+1. **One agent can't do everything well** - Splitting tasks across specialists dramatically improves output quality. A dedicated validator will always catch more issues than an all-in-one agent.
+
+2. **State is the glue** - `output_key` is what connects agents in workflows. Without it, agents can't pass data to each other.
+
+3. **Order matters in Sequential, not in Parallel** - If tasks depend on each other, use Sequential. If they're independent, Parallel gives you a speed boost.
+
+4. **Loops need an escape hatch** - Always set `max_iterations` and provide an explicit `exit_loop` tool. Without these, your agent will loop forever.
+
+5. **You can nest workflows** - Parallel inside Sequential (or any combo) opens up powerful patterns. Think of them as building blocks you can stack.
+
+---
+
 ## What's Next?
 
 In **Part 4**, we tackle the ultimate challenge: **Multi-Agent Systems with Routing**.
@@ -1618,6 +1632,20 @@ It's the glue that holds multi-agent systems together. Always name your outputs.
 
 ### 5. Terminal Agents are Your Friend
 For router patterns, always use `disallow_transfer_to_parent=True`. Trust me, infinite loops are not fun to debug.
+
+---
+
+### What I Learned
+
+1. **`sub_agents` is a handoff, not a call** - When the router transfers to a specialist, the specialist takes over completely. The router doesn't get the result back. This is great for simple delegation but limiting for orchestration.
+
+2. **Routing instructions must be crystal clear** - Vague routing like "handle technical stuff" leads to misrouted requests. Be explicit: "If the user mentions pods, kubectl, or Kubernetes, transfer to kubectl_agent."
+
+3. **`disallow_transfer_to_parent` prevents infinite loops** - Without it, specialists try to transfer back to the router, which transfers back to them, and so on. Always make specialists terminal.
+
+4. **`output_key` stores agent responses** - Even in routed systems, use `output_key` so each specialist's response is stored in session state for later reference.
+
+5. **Description matters for routing** - The router uses each specialist's `description` to decide who should handle the request. Write descriptions like you're explaining the agent's job to a new hire.
 
 ---
 
