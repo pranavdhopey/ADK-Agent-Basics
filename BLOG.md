@@ -1129,15 +1129,6 @@ Validator: "All checks pass!" → calls exit_loop()
 Final YAML returned (production-ready!)
 ```
 
-### What I Learned About LoopAgent
-
-1. **Always set max_iterations** - Infinite loops are bad!
-2. **The exit condition is a tool** - The AI decides when to exit by calling the tool
-3. **State accumulates** - Each iteration can read/write state
-4. **Quality improves** - Perfect for validation/correction patterns
-
----
-
 ## Recap: Workflow Agent Types
 
 | Agent | Pattern | Example | Key Insight |
