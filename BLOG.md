@@ -886,6 +886,17 @@ kubectl get pods
 
 Each agent does ONE thing perfectly!
 
+### When to Use Sequential
+
+Use SequentialAgent when:
+- Steps **depend on each other** (Step 2 needs Step 1's output)
+- You need a **pipeline** with clear data flow
+- The order of execution **matters**
+
+Don't use when:
+- Steps are independent (that's parallel)
+- You need dynamic routing based on input (that's a router agent)
+
 ---
 
 ## Parallel Agent: The Multi-Cloud Advisor
@@ -1107,6 +1118,18 @@ root_agent = SequentialAgent(
 The validator has a special tool called `exit_loop()`. When the YAML passes all checks, it calls this tool, which sets `tool_context.actions.escalate = True`. This tells the LoopAgent to stop immediately.
 
 Without this, the loop would always run all 3 iterations even if the YAML was perfect on the first try!
+
+### When to Use Loop
+
+Use LoopAgent when:
+- Output needs **iterative improvement** (generate → validate → fix)
+- Quality can be **checked programmatically** (validation rules)
+- You want **self-correcting** behavior without human intervention
+
+Don't use when:
+- A single pass is good enough (that's sequential)
+- There's no clear **exit condition** (you'll hit max_iterations every time)
+- Tasks are independent and don't build on each other (that's parallel)
 
 ### Example Execution
 
