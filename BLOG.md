@@ -554,15 +554,19 @@ from google.adk.sessions import InMemorySessionService
 from google.genai import types
 from agent import root_agent
 
+APP_NAME = "Greeting Bot"
+USER_ID = "user_001"
+SESSION_ID = str(uuid.uuid4())
+
 async def main():
     # 1. Create a session service (in-memory for now)
     session_service = InMemorySessionService()
 
     # 2. Create a unique session for this user
     session = await session_service.create_session(
-        app_name="Greeting Bot",
-        user_id="user_001",
-        session_id=str(uuid.uuid4()),
+        app_name=APP_NAME,
+        user_id=USER_ID,
+        session_id=SESSION_ID,
         state={}  # Start with empty state
     )
 
@@ -571,7 +575,7 @@ async def main():
     # 3. Create the runner
     runner = Runner(
         agent=root_agent,
-        app_name="Greeting Bot",
+        app_name=APP_NAME,
         session_service=session_service,
     )
 
@@ -587,12 +591,22 @@ async def main():
         )
 
         for event in runner.run(
-            user_id="user_001",
-            session_id=session.id,
+            user_id=USER_ID,
+            session_id=SESSION_ID,
             new_message=message,
         ):
             if event.is_final_response():
-                print(f"Agent: {event.content.parts[0].text}")
+                # Check if content exists (tool calls may not have text)
+                if event.content and event.content.parts and event.content.parts[0].text:
+                    print(f"Agent: {event.content.parts[0].text}")
+        
+        # Print state after each turn to verify it's being updated
+        current_state = await session_service.get_session(
+            app_name=APP_NAME,
+            user_id=USER_ID,
+            session_id=SESSION_ID
+        )
+        print(f"📊 Current State: {current_state.state}")
 
 asyncio.run(main())
 ```
@@ -629,12 +643,29 @@ The Runner connects everything together - your agent, the session service, and h
 **4. Running with Session Context**
 ```python
 for event in runner.run(
-    user_id="user_001",
-    session_id=session.id,
+    user_id=USER_ID,
+    session_id=SESSION_ID,
     new_message=message,
 ):
+    if event.is_final_response():
+        # Important: Check for content before accessing
+        if event.content and event.content.parts and event.content.parts[0].text:
+            print(f"Agent: {event.content.parts[0].text}")
 ```
-When you run the agent, you provide the user and session IDs. The runner automatically loads the state, lets the agent use it, and saves any changes.
+When you run the agent, you provide the user and session IDs. The runner automatically loads the state, lets the agent use it (and call tools!), and saves any changes.
+
+**Important note**: We check if `event.content` exists because when the agent calls tools, the event might not have text content. This prevents errors.
+
+**5. Checking State After Each Turn**
+```python
+current_state = await session_service.get_session(
+    app_name=APP_NAME,
+    user_id=USER_ID,
+    session_id=SESSION_ID
+)
+print(f"📊 Current State: {current_state.state}")
+```
+This prints the state dictionary after each turn, so you can verify that the tools are actually writing to state. Very helpful for debugging!
 
 ### Now Let's See It Work!
 
@@ -643,15 +674,19 @@ Session created: abc-123-def-456
 
 You: Hello!
 Agent: Hey there! I don't think we've met yet. What's your name?
+📊 Current State: {}
 
 You: I'm Alex
 Agent: Nice to meet you, Alex! I'll remember that. How can I help you today?
+📊 Current State: {'user_name': 'Alex'}
 
 You: What's my name?
 Agent: Your name is Alex! See, I've got a good memory!
+📊 Current State: {'user_name': 'Alex'}
 
 You: Hi again
 Agent: Hey Alex! Good to see you again!
+📊 Current State: {'user_name': 'Alex'}
 ```
 
 It remembers! The magic is that after "I'm Alex," the agent **called the `save_user_name("Alex")` tool**, which wrote `{user_name: "Alex"}` to the session state dictionary. Every subsequent message has access to that state.
