@@ -52,7 +52,17 @@ async def main():
             new_message=message,
         ):
             if event.is_final_response():
-                print("Agent:", event.content.parts[0].text)
+                # Check if content exists and has text parts (not just function calls)
+                if event.content and event.content.parts and event.content.parts[0].text:
+                    print("Agent:", event.content.parts[0].text)
+        
+        # Print state after each turn to verify it's being updated
+        current_state = await session_service.get_session(
+            app_name=APP_NAME,
+            user_id=USER_ID,
+            session_id=SESSION_ID
+        )
+        print(f"📊 Current State: {current_state.state}")
 
 
 asyncio.run(main())

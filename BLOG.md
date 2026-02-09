@@ -418,7 +418,7 @@ The best way to learn is by building. Trust me, I wrote probably 10 broken agent
 
 📁 **Code**: [GitHub Repository](https://github.com/pranavdhopey/ADK-Agent-Basics.git)
 
-> **TL;DR**: Learn how agents can remember context across conversations using `Runner`, `InMemorySessionService`, and `output_key`. Build an Incident Analyzer that stores results in session state.
+> **TL;DR**: Learn how agents can remember context across conversations using tools with `ToolContext`, `Runner`, and `InMemorySessionService`. Build a Stateful Greeting Agent that stores user names in session state.
 
 *Welcome back to the series! If you're joining fresh, I recommend starting with [Part 1](#part-1-the-basics---your-first-ai-agents) where we built our first three agents.*
 
@@ -493,6 +493,29 @@ Let me show you how they work together.
 
 ### The Agent Code
 
+**Important:** To actually write to session state, we need **tools with ToolContext**. Instructions alone won't modify `session.state`!
+
+First, let's define the tools:
+
+```python
+from google.adk.tools import ToolContext
+
+def save_user_name(name: str, tool_context: ToolContext):
+    """Saves the user's name to session state."""
+    tool_context.state["user_name"] = name
+    return f"✅ Saved '{name}' to state successfully!"
+
+def get_user_name(tool_context: ToolContext) -> str:
+    """Retrieves the user's name from session state."""
+    user_name = tool_context.state.get("user_name", "")
+    if user_name:
+        return f"Found user_name in state: {user_name}"
+    else:
+        return "No user_name found in state yet."
+```
+
+Now, let's create the agent with these tools:
+
 ```python
 from google.adk.agents import Agent
 
@@ -500,21 +523,24 @@ root_agent = Agent(
     name="stateful_greeting_agent",
     model="gemini-2.0-flash",
     description="A greeting agent that remembers your name",
+    tools=[save_user_name, get_user_name],  # Tools for state management!
     instruction="""
-    You are a friendly assistant that remembers users.
+    You are a friendly assistant that uses STATE MANAGEMENT.
 
-    Use conversation state to manage user information:
+    You have two tools to manage state:
+    1. get_user_name() - Check if user's name is in state
+    2. save_user_name(name) - Save user's name to state
 
-    1. If you don't know the user's name (not in state), ask for it
-    2. When the user tells you their name, store it in state as 'user_name'
-    3. If 'user_name' exists in state, greet them by name
-
-    Be warm, casual, and use their name naturally in conversation.
+    Rules:
+    - ALWAYS call get_user_name() first to check
+    - If empty, ask for their name
+    - When user provides name, call save_user_name(name) immediately
+    - Use the stored name to greet them personally
     """
 )
 ```
 
-The agent itself looks similar, but notice the instruction mentions "state." The AI understands it can read and write to a persistent storage.
+The tools use `tool_context.state` to directly read and write to the session state dictionary. This is the key to making state management actually work!
 
 ### The Runner Code
 
@@ -628,7 +654,7 @@ You: Hi again
 Agent: Hey Alex! Good to see you again!
 ```
 
-It remembers! The magic is that after "I'm Alex," the agent stored `{user_name: "Alex"}` in the session state. Every subsequent message has access to that state.
+It remembers! The magic is that after "I'm Alex," the agent **called the `save_user_name("Alex")` tool**, which wrote `{user_name: "Alex"}` to the session state dictionary. Every subsequent message has access to that state.
 
 ### State vs Context - Important Distinction!
 
@@ -640,27 +666,32 @@ I was confused about this at first, so let me clarify:
 ```
 The AI sees all previous messages. But parsing this to find the user's name is inefficient.
 
-**State** = Structured data you explicitly store (manual)
+**State** = Structured data you explicitly store via tools (manual)
 ```python
 {user_name: "Alex", theme: "dark", language: "en"}
 ```
-Fast to access, easy to query, explicitly controlled.
+Fast to access, easy to query, explicitly controlled, **programmatically accessible**.
 
 **Why use State?**
 - Faster: Direct lookup vs searching conversation
 - Structured: Clean data vs messy text
 - Controlled: You decide what to remember
 - Persistent: Survives beyond context window limits
+- **Programmatic**: Can use `session.state["user_name"]` in your code!
 
 ### What I Learned
 
-1. **State is powerful** - Once I understood state, I started seeing use cases everywhere: shopping carts, user preferences, form progress, game scores...
+1. **Tools are required for state management** - Instructions alone don't write to `session.state`. You need tools with `ToolContext`!
 
-2. **Session = User context** - Each session is like a separate notebook for that user. Perfect for multi-user applications.
+2. **tool_context.state is the key** - Use `tool_context.state` (not `tool_context.session.state`) for proper state access.
 
-3. **InMemorySessionService is for development** - It's fast and easy, but everything disappears when you restart. Use database-backed sessions for real apps.
+3. **State is powerful** - Once I understood state, I started seeing use cases everywhere: shopping carts, user preferences, form progress, game scores...
 
-4. **The Runner is the orchestrator** - It handles the complexity of loading state, running the agent, and saving updates.
+4. **Session = User context** - Each session is like a separate notebook for that user. Perfect for multi-user applications.
+
+5. **InMemorySessionService is for development** - It's fast and easy, but everything disappears when you restart. Use database-backed sessions for real apps.
+
+6. **The Runner is the orchestrator** - It handles the complexity of loading state, running the agent (and tools!), and saving updates.
 
 ---
 
@@ -671,6 +702,7 @@ Fast to access, easy to query, explicitly controlled.
 | 1 | `instruction` | Defines agent personality |
 | 1 | `tools` | External capabilities (search, etc.) |
 | 1 | `output_schema` | Structured JSON output |
+| 2 | Tools (for state) | Custom tools with ToolContext to read/write state |
 | 2 | State | Persistent memory across messages |
 | 2 | Session Service | Manages user sessions |
 | 2 | Runner | Executes agent with session support |
