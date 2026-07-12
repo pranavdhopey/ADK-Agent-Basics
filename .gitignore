@@ -1,0 +1,19 @@
+# Byte-compiled / optimized / DLL archive files
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Local configuration files (contains credentials)
+# .env
+# .env.*
+
+# ADK generated files
+**/.adk/
+**/session.db
+

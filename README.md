@@ -103,6 +103,7 @@ python run_agent.py
 | `stateful_greeting_agent` | Session state management |
 | `devops_copilot_agent_tool` | AgentTool pattern |
 | `devops_function_tool_agent` | FunctionTool with Python functions |
+| `litellm_agent` | Multi-provider models using LiteLLM |
 
 ## Resources
 

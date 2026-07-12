@@ -12,7 +12,7 @@ I'm going to be honest with you - when I first heard about "AI Agents," I though
 
 This blog series documents my journey learning Google's Agent Development Kit (ADK). I'm not an expert - I'm learning alongside you. Think of this as notes from a fellow student who just happens to be a few chapters ahead. I'll share the mistakes I made, the "aha!" moments I had, and most importantly, the actual code that works.
 
-This is a **6-part series** that will take you from building your first "hello world" agent to creating sophisticated multi-agent systems that can actually execute real infrastructure commands. Each part builds on the previous one, so by the end you'll have a solid understanding of ADK's core concepts - agents, tools, state management, workflows, and more. Whether you're completely new to AI agents or looking to learn Google's ADK specifically, this series has got you covered.
+This is a **7-part series** that will take you from building your first "hello world" agent to creating sophisticated multi-agent systems that can actually execute real infrastructure commands and support multiple model providers. Each part builds on the previous one, so by the end you'll have a solid understanding of ADK's core concepts - agents, tools, state management, workflows, and more. Whether you're completely new to AI agents or looking to learn Google's ADK specifically, this series has got you covered.
 
 Let's dive in!
 
@@ -26,6 +26,7 @@ Let's dive in!
 - [Part 4: Multi-Agent Systems](#part-4-multi-agent-systems---the-router-pattern) - Router pattern with specialist agents
 - [Part 5: AgentTool](#part-5-agenttool---turning-agents-into-tools) - Wrapping agents as callable tools
 - [Part 6: FunctionTool](#part-6-functiontool---giving-agents-real-power) - Executing real code with Python functions
+- [Part 7: Multi-Provider Support with LiteLLM](#part-7-multi-provider-support---using-litellm-with-google-adk) - Running non-Gemini models
 - [Quick Reference Card](#quick-reference-card) - Cheat sheet for all ADK patterns
 
 ---
@@ -2738,6 +2739,78 @@ Consider logging all tool invocations for security review.
 
 ---
 
+# Part 7: Multi-Provider Support - Using LiteLLM with Google ADK
+
+📁 **Code**: [GitHub Repository](https://github.com/pranavdhopey/ADK-Agent-Basics.git)
+
+> **TL;DR**: Learn how to use non-Gemini models (like Anthropic Claude or OpenAI GPT) in your Google ADK agents using the LiteLLM integration. We'll build an agent that uses Claude Haiku under the hood.
+
+---
+
+## Why Use Other Model Providers?
+
+While Google's Gemini models are fantastic, fast, and cost-effective, real-world applications sometimes require testing or utilizing models from other providers (like Anthropic's Claude or OpenAI's GPT-4) for comparison, specialized capabilities, or vendor neutrality.
+
+Google ADK supports this natively through its **LiteLLM integration**. LiteLLM acts as a unified translation layer, letting you invoke hundreds of different LLMs using the exact same ADK agent patterns.
+
+## The LiteLlm Class
+
+To use another provider, you import `LiteLlm` from `google.adk.models.lite_llm` and pass it to the agent's `model` parameter.
+
+Here is the code for our LiteLLM agent:
+
+```python
+from google.adk.agents import Agent
+from google.adk.models.lite_llm import LiteLlm
+
+root_agent = Agent(
+    name="litellm_devops_agent",
+    model=LiteLlm(model="anthropic/claude-haiku-4-5-20251001"),
+    description="A DevOps assistant powered by Anthropic Claude (via LiteLLM) that helps troubleshoot systems and write automation scripts",
+    instruction="""
+    You are a DevOps Assistant powered by Anthropic Claude (via LiteLLM).
+
+    Your job:
+    - Help engineers troubleshoot system errors, logs, and stack traces
+    - Recommend cloud infrastructure best practices for GCP, AWS, and Kubernetes
+    - Generate clean, commented automation scripts (Bash, Python, Terraform, etc.)
+    - Explain complex DevOps workflows in simple, clear language
+
+    Always keep responses structured, professional, and technically accurate.
+    """
+)
+```
+
+## How It Works Under the Hood
+
+1. **Standard Imports**: We import `Agent` from `google.adk.agents` just like in our previous chapters to maintain a consistent developer experience.
+2. **Model Specification**: We instantiate `LiteLlm` with a provider-prefixed model string (e.g., `anthropic/claude-haiku-4-5-20251001` or `openai/gpt-4o`).
+3. **API Key Routing**: When the runner calls the agent, LiteLLM intercepts the call and routes it to the Anthropic API endpoint, using the `ANTHROPIC_API_KEY` from the environment.
+
+## Setup Requirements
+
+To run this agent:
+
+1. **Install LiteLLM**:
+   ```bash
+   pip install litellm
+   ```
+2. **Configure API Keys**:
+   Add your provider's API key to your `.env` file:
+   ```env
+   ANTHROPIC_API_KEY=your-actual-anthropic-key
+   ```
+
+---
+
+## What I Learned about LiteLLM Integration
+
+1. **Seamless Swap**: All of your existing ADK patterns (like `SequentialAgent`, `ParallelAgent`, and tools) still work perfectly. ADK abstracts the model calls entirely.
+2. **API Keys naming**: LiteLLM standardizes on standard provider key names like `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` rather than ADK specific ones.
+3. **Model Strings**: Ensure you use the exact LiteLLM model prefixes (e.g., `anthropic/...` or `openai/...`) so LiteLLM knows where to route the request.
+
+---
+
 ## Final Thoughts
 
 We've come full circle! From simple "hello world" agents in Part 1 to sophisticated systems that can:
@@ -2746,6 +2819,7 @@ We've come full circle! From simple "hello world" agents in Part 1 to sophistica
 - Route requests dynamically (Part 4)
 - Orchestrate specialists as tools (Part 5)
 - Execute real infrastructure commands (Part 6)
+- Run non-Gemini models via LiteLLM (Part 7)
 
 The patterns build on each other. Once you understand the fundamentals, you can combine them in countless ways.
 
@@ -2830,6 +2904,11 @@ instruction="Use the value from {previous_output_key}"
 def exit_loop(tool_context: ToolContext):
     tool_context.actions.escalate = True
     return {"status": "done"}
+
+# LiteLLM Integration (Multi-Provider Models)
+from google.adk.models.lite_llm import LiteLlm
+from google.adk.agents import Agent
+Agent(model=LiteLlm(model="anthropic/claude-haiku-4-5-20251001"), name="litellm_devops_agent", ...)
 ```
 
 ---
