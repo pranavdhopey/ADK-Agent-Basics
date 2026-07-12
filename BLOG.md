@@ -2783,9 +2783,53 @@ root_agent = Agent(
 
 ## How It Works Under the Hood
 
-1. **Standard Imports**: We import `Agent` from `google.adk.agents` just like in our previous chapters to maintain a consistent developer experience.
-2. **Model Specification**: We instantiate `LiteLlm` with a provider-prefixed model string (e.g., `anthropic/claude-haiku-4-5-20251001` or `openai/gpt-4o`).
-3. **API Key Routing**: When the runner calls the agent, LiteLLM intercepts the call and routes it to the Anthropic API endpoint, using the `ANTHROPIC_API_KEY` from the environment.
+To understand how Google ADK integrates with other model providers, it's helpful to look at the component stack:
+
+```
+User Request
+     │
+     ▼
+┌─────────────────────────┐
+│     Google ADK Agent    │  <-- Maintains session state, templates, and orchestration
+└────────────┬────────────┘
+             │
+             ▼
+┌─────────────────────────┐
+│     LiteLlm Adapter     │  <-- ADK's internal wrapper class
+└────────────┬────────────┘
+             │
+             ▼
+┌─────────────────────────┐
+│     LiteLLM Library     │  <-- Underlying Python library handling model translation
+└────────────┬────────────┘
+             │
+             ▼
+┌─────────────────────────┐
+│      Anthropic API      │  <-- Processed by Claude Haiku using ANTHROPIC_API_KEY
+└─────────────────────────┘
+```
+
+Here's the plumbing behind every `.run()` call:
+
+```
+  ┌────────────────┐       ┌───────────┐       ┌─────────────────┐
+  │   ADK Runner   │ ────> │  LiteLlm  │ ────> │ Provider Router │
+  │  (your agent)  │       │  wrapper  │       │ (LiteLLM core)  │
+  └────────────────┘       └───────────┘       └────────┬────────┘
+                                                        │ reads "anthropic/..." prefix
+                                                        │ picks up ANTHROPIC_API_KEY
+                                                        ▼
+                                               ┌─────────────────┐
+                                               │  Anthropic API  │
+                                               │  (Claude Haiku) │
+                                               └─────────────────┘
+```
+
+1. **The Agent stays generic**: It calls `model.generate()` the exact same way regardless of what's inside — it doesn't know or care that it's talking to Claude instead of Gemini.
+2. **LiteLLM reads the prefix**: The `anthropic/` in `anthropic/claude-haiku-4-5-20251001` tells LiteLLM which provider adapter to use and which environment variable to read.
+3. **LiteLLM routes and authenticates**: It resolves the request to Anthropic's API endpoint and reads `ANTHROPIC_API_KEY` from your environment.
+4. **The response comes back normalized**: Whatever shape Claude Haiku returns, LiteLLM reshapes it into the format ADK's runner already knows how to parse. This normalization step is crucial because it ensures that features like tool calls, routing, and structured schemas continue working without any model-specific logic in your agent code!
+
 
 ## Setup Requirements
 

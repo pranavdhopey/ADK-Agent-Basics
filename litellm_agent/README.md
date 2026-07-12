@@ -54,6 +54,10 @@ The `Agent` constructor accepts:
 
 ## How It Works
 
+### The Component Stack Flow
+
+Here is the sequential flow of data from the user request down to the model provider:
+
 ```
 User Request (e.g., "Troubleshoot this crash log...")
           │
@@ -89,6 +93,31 @@ User Request (e.g., "Troubleshoot this crash log...")
 │  response text back to ADK.                  │
 └──────────────────────────────────────────────┘
 ```
+
+### What's Actually Happening When You Call `.run()`
+
+It's worth understanding the plumbing here, because it explains how ADK stays provider-agnostic:
+
+```
+  ┌────────────────┐       ┌───────────┐       ┌─────────────────┐
+  │   ADK Runner   │ ────> │  LiteLlm  │ ────> │ Provider Router │
+  │  (your agent)  │       │  wrapper  │       │ (LiteLLM core)  │
+  └────────────────┘       └───────────┘       └────────┬────────┘
+                                                        │ reads "anthropic/..." prefix
+                                                        │ picks up ANTHROPIC_API_KEY
+                                                        ▼
+                                               ┌─────────────────┐
+                                               │  Anthropic API  │
+                                               │  (Claude Haiku) │
+                                               └─────────────────┘
+```
+
+1. **`Agent` stays generic**: It calls `model.generate()` the exact same way regardless of what's inside — it doesn't know or care that it's talking to Claude instead of Gemini.
+2. **`LiteLlm` reads the prefix**: The `anthropic/` prefix in `anthropic/claude-haiku-4-5-20251001` tells LiteLLM which provider adapter to use and which environment variable to read.
+3. **LiteLLM routes and authenticates**: It resolves the request to Anthropic's API endpoint and reads `ANTHROPIC_API_KEY` from your environment.
+4. **The response comes back normalized**: Whatever shape Claude Haiku returns, LiteLLM reshapes it into the unified schema ADK's runner already knows how to parse. 
+
+That normalization step is the entire point of the integration — it's what lets `transfer_to_agent`, tool calls, and structured output all keep working without provider-specific branching in your code.
 
 ---
 
