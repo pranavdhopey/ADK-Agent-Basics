@@ -71,13 +71,13 @@ Create a `.env` file inside the specific agent directory you wish to run.
 
 **Option A: Quick Prototyping (Google API Key)**
 ```env
-GOOGLE_GENAI_USE_VERTEXAI=FALSE
+GOOGLE_GENAI_USE_ENTERPRISE=FALSE
 GOOGLE_API_KEY=your_api_key_here
 ```
 
 **Option B: Enterprise (Vertex AI)**
 ```env
-GOOGLE_GENAI_USE_VERTEXAI=TRUE
+GOOGLE_GENAI_USE_ENTERPRISE=TRUE
 GOOGLE_CLOUD_PROJECT=your_gcp_project_id
 GOOGLE_CLOUD_LOCATION=us-central1
 ```
@@ -116,6 +116,7 @@ python run_agent.py
 Ready to take your agent from local to production? Check out our step-by-step deployment tutorials:
 - 📖 [Deploying to Cloud Run: The One-Command Deploy](deploying-adk-agent-cloud-run.md)
 - 📖 [Deploying to Agent Engine: The Fully Managed Path](deploying-adk-agent-to-agent-engine.md)
+- 📖 [Deploying to GKE: The Ultimate Control Path](deploying-adk-agent-to-gke.md)
 
 ---
 
