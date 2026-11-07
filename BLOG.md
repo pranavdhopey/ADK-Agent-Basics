@@ -28,6 +28,7 @@ Let's dive in!
 - [Part 6: FunctionTool](#part-6-functiontool---giving-agents-real-power) - Executing real code with Python functions
 - [Part 7: Multi-Provider Support with LiteLLM](#part-7-multi-provider-support---using-litellm-with-google-adk) - Running non-Gemini models
 - [Part 8: Model Context Protocol (MCP) Tools](#part-8-model-context-protocol-mcp-tools---connecting-to-external-services) - Connecting to remote servers
+- [Deep Dive: ADK Callbacks & Interceptors](CALLBACKS_BLOG.md) - Deterministic control plane (Agent, Model & Tool Callbacks)
 - [Quick Reference Card](#quick-reference-card) - Cheat sheet for all ADK patterns
 ---
 
