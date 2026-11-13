@@ -124,8 +124,8 @@ Ready to take your agent from local to production? Check out our step-by-step de
 ## 📚 Further Reading & Resources
 - [Official ADK Documentation](https://google.github.io/adk-docs/)
 - [Official ADK Callbacks Specification](https://adk.dev/callbacks/)
-- [BLOG.md](BLOG.md) - Deep dive tutorial covering agent patterns
-- [CALLBACKS_BLOG.md](CALLBACKS_BLOG.md) - Deep dive tutorial on Google ADK Callbacks & Interceptors
+- [📖 The Complete ADK Blog Series (`blog/`)](blog/README.md) - All tutorial parts (Core Series Parts 1–8 & Callbacks Series Parts 1–4)
+- [🛡️ Mastering ADK Callbacks: Part 1](blog/callbacks-part-1-agent-lifecycle.md) - Deep dive on agent lifecycle hooks & guardrails
 
 ---
 

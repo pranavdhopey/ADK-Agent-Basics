@@ -31,6 +31,33 @@ def auth_guard_callback(callback_context: CallbackContext) -> Optional[types.Con
     - Returning Content skips the agent and LLM call completely.
     - Returning None allows normal execution to proceed.
     """
+    user_text = ""
+    if callback_context.user_content and callback_context.user_content.parts:
+        user_text = (callback_context.user_content.parts[0].text or "").strip().lower()
+
+    # Allow users to authenticate or log out directly through conversation
+    if user_text in ["login", "log in", "authenticate"]:
+        callback_context.state["authenticated"] = True
+        print(f"🔑 [before_agent] User authenticated via conversation! State updated.")
+        return types.Content(
+            parts=[
+                types.Part.from_text(
+                    text="🔑 Login successful! Your session is now authenticated. How can I help you today?"
+                )
+            ]
+        )
+
+    if user_text in ["logout", "log out"]:
+        callback_context.state["authenticated"] = False
+        print(f"🔒 [before_agent] User logged out via conversation! State updated.")
+        return types.Content(
+            parts=[
+                types.Part.from_text(
+                    text="🔒 You have been logged out. Type 'login' to authenticate again."
+                )
+            ]
+        )
+
     is_authenticated = callback_context.state.get("authenticated", False)
     user_id = callback_context.user_id or "anonymous"
     
@@ -41,7 +68,7 @@ def auth_guard_callback(callback_context: CallbackContext) -> Optional[types.Con
         return types.Content(
             parts=[
                 types.Part.from_text(
-                    text="⛔ [Access Denied] You are not authenticated. Please log in before talking to the banking agent."
+                    text="⛔ [Access Denied] You are not authenticated. Type 'login' to authenticate."
                 )
             ]
         )

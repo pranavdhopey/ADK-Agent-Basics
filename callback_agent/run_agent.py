@@ -14,6 +14,7 @@ import os
 import uuid
 from dotenv import load_dotenv
 
+from google.adk.events import Event, EventActions
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
@@ -25,21 +26,18 @@ load_dotenv()
 
 async def main():
     print("=" * 70)
-    print("🛡️ Google ADK Enterprise Callback Demo")
+    print("🛡️ Google ADK Enterprise Callback Demo - Step-by-Step Lab")
     print("=" * 70)
-    print("This agent is guarded by 3 levels of callbacks:")
-    print("1. Agent Lifecycle : before_agent_callback (Auth gate) & after_agent_callback")
-    print("2. Model Level     : before_model_callback (Cache) & after_model_callback (PII scrub)")
-    print("3. Tool Level      : before_tool_callback (Safety) & after_tool_callback (Secret scrub)")
-    print("-" * 70)
-    print("Special test commands:")
-    print("  'login'        -> Toggles authentication in session state to True")
-    print("  'logout'       -> Sets authentication in session state to False")
-    print("  'hours'        -> Triggers in-memory query cache ('what are your support hours?')")
-    print("  'danger'       -> Triggers blocked command ('rm -rf /var/data')")
-    print("  'account'      -> Triggers secret redaction ('lookup account ACC-101')")
-    print("  'crash'        -> Triggers tool error recovery ('lookup corrupt_acc')")
-    print("  'exit'         -> Quits the runner")
+    print("Type a number (1-8) or keyword to test each callback individually:")
+    print("  [1] login   -> Authenticate session (Required for tests 3-8)")
+    print("  [2] logout  -> Test 'before_agent_callback' (Rejects unauthenticated)")
+    print("  [3] cache   -> Test 'before_model_callback' (Zero-cost FAQ cache hit)")
+    print("  [4] danger  -> Test 'before_tool_callback' (Blocks 'rm -rf' command)")
+    print("  [5] secret  -> Test 'after_tool_callback' (Masks DB API secret)")
+    print("  [6] crash   -> Test 'on_tool_error_callback' (Recovers from DB failure)")
+    print("  [7] pii     -> Test 'after_model_callback' (Redacts Credit Card numbers)")
+    print("  [8] normal  -> Test 'after_agent_callback' (Appends ISO audit notice)")
+    print("  exit        -> Quits the runner")
     print("=" * 70)
 
     session_service = InMemorySessionService()
@@ -73,35 +71,63 @@ async def main():
             break
 
         # Interactive state toggles for testing
-        if user_input.lower() == "login":
+        if user_input.lower() in ["1", "login"]:
+            # 1. Update internal storage if available (InMemorySessionService)
+            if hasattr(session_service, "sessions") and APP_NAME in session_service.sessions:
+                session_service.sessions[APP_NAME][USER_ID][SESSION_ID].state["authenticated"] = True
+            # 2. Append event with state_delta to persist in session service
             current_session = await session_service.get_session(
                 app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID
             )
-            current_session.state["authenticated"] = True
-            print("🔑 [State Updated] 'authenticated' set to True! You can now talk to the agent.")
+            evt = Event(author="system", actions=EventActions(state_delta={"authenticated": True}))
+            await session_service.append_event(session=current_session, event=evt)
+            print("\n" + "="*60)
+            print("🔑 [State Updated] 'authenticated' set to True!")
+            print("You are now logged in. Try tests [3] to [8]!")
+            print("="*60 + "\n")
             continue
 
-        if user_input.lower() == "logout":
+        if user_input.lower() in ["2", "logout"]:
+            # 1. Update internal storage if available (InMemorySessionService)
+            if hasattr(session_service, "sessions") and APP_NAME in session_service.sessions:
+                session_service.sessions[APP_NAME][USER_ID][SESSION_ID].state["authenticated"] = False
+            # 2. Append event with state_delta to persist in session service
             current_session = await session_service.get_session(
                 app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID
             )
-            current_session.state["authenticated"] = False
-            print("🔒 [State Updated] 'authenticated' set to False! The before_agent_callback will now block requests.")
+            evt = Event(author="system", actions=EventActions(state_delta={"authenticated": False}))
+            await session_service.append_event(session=current_session, event=evt)
+            print("\n" + "="*60)
+            print("🔒 [State Updated] 'authenticated' set to False!")
+            print("Now send any message (e.g. 'hello') to observe 'before_agent_callback' block you.")
+            print("="*60 + "\n")
             continue
 
         # Shortcuts for common tests
-        if user_input.lower() == "hours":
+        if user_input.lower() in ["3", "cache", "hours"]:
+            print("\n▶ [TESTING: before_model_callback]")
+            print("Query matches FAQ cache. Expecting instant response without calling Gemini API...")
             user_input = "What are your support hours?"
-            print(f"Executing: '{user_input}'")
-        elif user_input.lower() == "danger":
+        elif user_input.lower() in ["4", "danger"]:
+            print("\n▶ [TESTING: before_tool_callback]")
+            print("Request contains 'rm -rf'. Expecting tool callback to block execution...")
             user_input = "Please run execute_server_command with command 'rm -rf /var/data'"
-            print(f"Executing: '{user_input}'")
-        elif user_input.lower() == "account":
+        elif user_input.lower() in ["5", "secret", "account"]:
+            print("\n▶ [TESTING: after_tool_callback]")
+            print("Fetching customer account. Expecting tool callback to scrub internal API secrets...")
             user_input = "Please lookup account details for 'ACC-101'"
-            print(f"Executing: '{user_input}'")
-        elif user_input.lower() == "crash":
+        elif user_input.lower() in ["6", "crash"]:
+            print("\n▶ [TESTING: on_tool_error_callback]")
+            print("Calling failing account ID. Expecting error callback to catch DB exception...")
             user_input = "Please lookup account details for 'corrupt_acc'"
-            print(f"Executing: '{user_input}'")
+        elif user_input.lower() in ["7", "pii"]:
+            print("\n▶ [TESTING: after_model_callback]")
+            print("Prompting LLM with a fake card. Expecting model callback to redact credit card pattern...")
+            user_input = "Print this receipt: Card 4532-1111-2222-3333 charged $50."
+        elif user_input.lower() in ["8", "normal"]:
+            print("\n▶ [TESTING: after_agent_callback]")
+            print("Standard conversation turn. Expecting compliance disclaimer appended at the bottom...")
+            user_input = "Hello! What services do you offer?"
 
         message = types.Content(
             role="user",
